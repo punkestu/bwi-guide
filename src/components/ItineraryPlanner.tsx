@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { Itinerary, TodoItem, ScheduledItem } from '../types';
 import { banyuwangiData } from '../data';
 import { Trash2, Plus, CheckCircle2, Circle, ChevronRight, ArrowLeft, Edit2, Check, Camera, Download } from 'lucide-react';
