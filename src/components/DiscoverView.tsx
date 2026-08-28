@@ -1,8 +1,7 @@
 import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
 import L from 'leaflet';
-import { banyuwangiData } from '../data';
-import { Category } from '../types';
+import { Attraction, Category } from '../types';
 import { Search, List, Map as MapIcon, Plus, X, Sparkles, Shuffle, MapPin } from 'lucide-react';
 
 const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
@@ -32,9 +31,10 @@ const userIcon = L.divIcon({
 
 interface DiscoverViewProps {
   onAddToItinerary: (attractionId: string) => void;
+  attractions: Attraction[];
 }
 
-export function DiscoverView({ onAddToItinerary }: DiscoverViewProps) {
+export function DiscoverView({ onAddToItinerary, attractions }: DiscoverViewProps) {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState<Category | 'all'>('all');
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
@@ -45,7 +45,7 @@ export function DiscoverView({ onAddToItinerary }: DiscoverViewProps) {
 
   useEffect(() => {
     if (selectedAttraction) {
-      const others = banyuwangiData.filter(a => a.id !== selectedAttraction);
+      const others = attractions.filter(a => a.id !== selectedAttraction);
       if (others.length > 0) {
         const random = others[Math.floor(Math.random() * others.length)];
         setRandomSuggestion(random.id);
@@ -66,19 +66,19 @@ export function DiscoverView({ onAddToItinerary }: DiscoverViewProps) {
     }
   }, []);
 
-  const allCategories = ['all', ...Array.from(new Set(banyuwangiData.map(item => item.category)))];
+  const allCategories = ['all', ...Array.from(new Set(attractions.map(item => item.category)))];
 
   useEffect(() => {
     const updateHighlight = () => {
        const hour = Math.floor(Date.now() / 3600000);
-       setHighlightIndex(hour % banyuwangiData.length);
+       setHighlightIndex(hour % attractions.length);
     };
     updateHighlight();
     const interval = setInterval(updateHighlight, 60000);
     return () => clearInterval(interval);
   }, []);
 
-  const highlightedItem = banyuwangiData[highlightIndex];
+  const highlightedItem = attractions[highlightIndex];
 
   const handleRandomRecommendation = () => {
      if (randomSuggestion) {
@@ -86,7 +86,7 @@ export function DiscoverView({ onAddToItinerary }: DiscoverViewProps) {
      }
   };
 
-  const filteredData = banyuwangiData.filter(item => {
+  const filteredData = attractions.filter(item => {
     const searchLower = search.toLowerCase();
     const matchesSearch = item.name.toLowerCase().includes(searchLower) || 
                           item.description.toLowerCase().includes(searchLower) ||
@@ -248,7 +248,7 @@ export function DiscoverView({ onAddToItinerary }: DiscoverViewProps) {
         <div className="fixed inset-0 bg-black/60 backdrop-blur-sm z-50 flex items-center justify-center p-4">
           <div className="bg-white rounded-2xl max-w-2xl w-full max-h-[90vh] overflow-y-auto shadow-xl border-b-4 border-r-4 border-primary flex flex-col relative animate-in fade-in zoom-in-95 duration-200">
             {(() => {
-              const item = banyuwangiData.find(d => d.id === selectedAttraction);
+              const item = attractions.find(d => d.id === selectedAttraction);
               if (!item) return null;
               return (
                 <>
@@ -289,7 +289,7 @@ export function DiscoverView({ onAddToItinerary }: DiscoverViewProps) {
                       </button>
 
                       {randomSuggestion && (() => {
-                        const rec = banyuwangiData.find(d => d.id === randomSuggestion);
+                        const rec = attractions.find(d => d.id === randomSuggestion);
                         if (!rec) return null;
                         return (
                           <div 
@@ -312,7 +312,7 @@ export function DiscoverView({ onAddToItinerary }: DiscoverViewProps) {
                     </div>
 
                     {(() => {
-                      const nearest = banyuwangiData
+                      const nearest = attractions
                         .filter(d => d.id !== item.id)
                         .map(d => ({ ...d, distance: calculateDistance(item.lat, item.lng, d.lat, d.lng) }))
                         .filter(d => d.distance <= 10)

@@ -1,15 +1,29 @@
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { DiscoverView } from './components/DiscoverView';
 import { ItineraryPlanner } from './components/ItineraryPlanner';
-import { Itinerary } from './types';
-import { Map, MapPin, CalendarDays, X, Plus } from 'lucide-react';
-import { banyuwangiData } from './data';
+import { Itinerary, Attraction } from './types';
+import { Map, MapPin, CalendarDays, X, Plus, Loader2 } from 'lucide-react';
 
 export default function App() {
   const [activeTab, setActiveTab] = useState<'discover' | 'planner'>('discover');
   const [itineraries, setItineraries] = useLocalStorage<Itinerary[]>('banyuwangi_itineraries', []);
   const [addingAttraction, setAddingAttraction] = useState<string | null>(null);
+  const [attractions, setAttractions] = useState<Attraction[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    fetch('https://raw.githubusercontent.com/punkestu/bwi-guide-data/refs/heads/main/attractions-data.json')
+      .then(res => res.json())
+      .then(data => {
+        setAttractions(data);
+        setLoading(false);
+      })
+      .catch(err => {
+        console.error("Failed to fetch attractions:", err);
+        setLoading(false);
+      });
+  }, []);
   
   const handleAddToItinerary = (attractionId: string) => {
     setAddingAttraction(attractionId);
@@ -56,7 +70,18 @@ export default function App() {
     setActiveTab('planner'); 
   };
 
-  const attractionToAdd = addingAttraction ? banyuwangiData.find(d => d.id === addingAttraction) : null;
+  const attractionToAdd = addingAttraction ? attractions.find(d => d.id === addingAttraction) : null;
+
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="flex flex-col items-center gap-4 text-primary">
+          <Loader2 className="w-12 h-12 animate-spin" />
+          <h2 className="text-xl font-bold uppercase tracking-widest">Loading Destinations...</h2>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen text-gray-900 pb-12 font-sans">
@@ -92,9 +117,9 @@ export default function App() {
 
       <main className="max-w-6xl mx-auto px-4 mt-8">
         {activeTab === 'discover' ? (
-          <DiscoverView onAddToItinerary={handleAddToItinerary} />
+          <DiscoverView onAddToItinerary={handleAddToItinerary} attractions={attractions} />
         ) : (
-          <ItineraryPlanner itineraries={itineraries} setItineraries={setItineraries} />
+          <ItineraryPlanner itineraries={itineraries} setItineraries={setItineraries} attractions={attractions} />
         )}
       </main>
 

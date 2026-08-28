@@ -1,14 +1,14 @@
 import React, { useState } from 'react';
-import { Itinerary, TodoItem, ScheduledItem } from '../types';
-import { banyuwangiData } from '../data';
+import { Itinerary, TodoItem, ScheduledItem, Attraction } from '../types';
 import { Trash2, Plus, CheckCircle2, Circle, ChevronRight, ArrowLeft, Edit2, Check, Camera, Download } from 'lucide-react';
 
 interface ItineraryPlannerProps {
   itineraries: Itinerary[];
   setItineraries: (val: Itinerary[] | ((prev: Itinerary[]) => Itinerary[])) => void;
+  attractions: Attraction[];
 }
 
-export function ItineraryPlanner({ itineraries, setItineraries }: ItineraryPlannerProps) {
+export function ItineraryPlanner({ itineraries, setItineraries, attractions }: ItineraryPlannerProps) {
   const [activeId, setActiveId] = useState<string | null>(null);
   const [newTitle, setNewTitle] = useState('');
   const [newTodo, setNewTodo] = useState('');
@@ -211,7 +211,7 @@ export function ItineraryPlanner({ itineraries, setItineraries }: ItineraryPlann
             ) : (
               <div className="flex flex-col gap-3">
                 {sortedSchedule.map(sched => {
-                  const attr = banyuwangiData.find(d => d.id === sched.attractionId);
+                  const attr = attractions.find(d => d.id === sched.attractionId);
                   if (!attr) return null;
                   return (
                     <div 
