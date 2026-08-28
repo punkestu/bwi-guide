@@ -1,0 +1,94 @@
+[
+  {
+    "id": "1",
+    "name": "Kawah Ijen (Ijen Crater)",
+    "description": "Famous for its blue fire and acidic crater lake.",
+    "category": "place",
+    "tags": ["mountain", "hiking", "nature"],
+    "lat": -8.0584,
+    "lng": 114.242,
+    "imageUrl": "https://images.unsplash.com/photo-1571704257128-4dcbdbeaaeb8?w=800&q=80",
+    "mapIframe": "<iframe width=\"100%\" height=\"250\" frameborder=\"0\" scrolling=\"no\" marginheight=\"0\" marginwidth=\"0\" src=\"https://maps.google.com/maps?q=-8.0584,114.242&t=&z=13&ie=UTF8&iwloc=&output=embed\"></iframe>"
+  },
+  {
+    "id": "2",
+    "name": "Taman Nasional Baluran",
+    "description": "Often called the Africa of Java, known for its extensive savanna and wildlife.",
+    "category": "place",
+    "tags": ["wildlife", "savanna", "nature"],
+    "lat": -7.8385,
+    "lng": 114.3888,
+    "imageUrl": "https://images.unsplash.com/photo-1626084059049-7e9b0b4b2488?w=800&q=80"
+  },
+  {
+    "id": "3",
+    "name": "Pantai Pulau Merah (Red Island Beach)",
+    "description": "Beautiful beach with a distinctive red hill and great surf breaks.",
+    "category": "place",
+    "tags": ["beach", "surfing", "sunset"],
+    "lat": -8.6025,
+    "lng": 114.0272,
+    "imageUrl": "https://images.unsplash.com/photo-1616172605898-7505ed341490?w=800&q=80"
+  },
+  {
+    "id": "4",
+    "name": "Gandrung Sewu",
+    "description": "A spectacular annual cultural festival featuring thousands of Gandrung dancers on the beach.",
+    "category": "event",
+    "tags": ["culture", "dance", "festival"],
+    "lat": -8.2185,
+    "lng": 114.3756,
+    "imageUrl": "https://images.unsplash.com/photo-1558284562-f67fcebc2fce?w=800&q=80"
+  },
+  {
+    "id": "5",
+    "name": "Banyuwangi Ethno Carnival",
+    "description": "A vibrant annual carnival showcasing local culture, traditional arts, and extravagant costumes.",
+    "category": "event",
+    "tags": ["carnival", "culture", "art"],
+    "lat": -8.2192,
+    "lng": 114.3692,
+    "imageUrl": "https://images.unsplash.com/photo-1533558701584-cb9a36a28292?w=800&q=80"
+  },
+  {
+    "id": "6",
+    "name": "Sego Tempong",
+    "description": "Traditional spicy rice dish served with boiled vegetables, fried tofu, tempeh, and a very spicy sambal.",
+    "category": "food",
+    "tags": ["spicy", "traditional", "culinary"],
+    "lat": -8.215,
+    "lng": 114.365,
+    "imageUrl": "https://images.unsplash.com/photo-1604908176997-125f25cc6f3d?w=800&q=80",
+    "mapIframe": "<iframe width=\"100%\" height=\"250\" frameborder=\"0\" scrolling=\"no\" marginheight=\"0\" marginwidth=\"0\" src=\"https://maps.google.com/maps?q=-8.215,114.365&t=&z=15&ie=UTF8&iwloc=&output=embed\"></iframe>"
+  },
+  {
+    "id": "7",
+    "name": "Rujak Soto",
+    "description": "A unique and delicious blend of Rujak (fruit/vegetable salad with peanut sauce) and Soto (traditional beef soup).",
+    "category": "food",
+    "tags": ["unique", "traditional", "culinary"],
+    "lat": -8.22,
+    "lng": 114.37,
+    "imageUrl": "https://images.unsplash.com/photo-1541529124443-4be440625a7e?w=800&q=80"
+  },
+  {
+    "id": "8",
+    "name": "Osing Traditional Village",
+    "description": "Experience the unique culture, architecture, and coffee of the indigenous Osing people of Banyuwangi.",
+    "category": "culture",
+    "tags": ["village", "coffee", "heritage"],
+    "lat": -8.232,
+    "lng": 114.316,
+    "imageUrl": "https://images.unsplash.com/photo-1518548419970-58e3b4079ab2?w=800&q=80"
+  },
+  {
+    "id": "9",
+    "name": "Alas Purwo National Park",
+    "description": "Dense, mystical monsoon forest known for its biodiversity, sacred caves, and legendary surf breaks.",
+    "category": "nature",
+    "tags": ["forest", "mystical", "wildlife"],
+    "lat": -8.6667,
+    "lng": 114.4500,
+    "imageUrl": "https://images.unsplash.com/photo-1543880292-49197c36199a?w=800&q=80"
+  }
+]

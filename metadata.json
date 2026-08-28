@@ -1,0 +1,6 @@
+{
+  "name": "Banyuwangi Explorer",
+  "description": "Tourist guide app for Banyuwangi city with interactive maps and itinerary planning.",
+  "requestFramePermissions": ["geolocation", "camera"],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
