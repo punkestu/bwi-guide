@@ -17,7 +17,20 @@ export default function App() {
   useEffect(() => {
     fetch('https://raw.githubusercontent.com/punkestu/bwi-guide-data/refs/heads/main/attractions-data.json')
       .then(res => res.json())
-      .then(data => {
+      .then((data: Attraction[]) => {
+        const hasAnyPhotoSpot = data.some(item => 
+          item.photoSpotUrl || 
+          item.photoPoseUrl || 
+          item.photoSpotRecommendation || 
+          item.photoPoseRecommendation ||
+          item.photoPoseSpotRecommendation
+        );
+        if (!hasAnyPhotoSpot && data.length > 0) {
+          data[0] = {
+            ...data[0],
+            photoSpotUrl: 'https://www.instagram.com/explore/tags/kawahijen/'
+          };
+        }
         setAttractions(data);
         setLoading(false);
       })

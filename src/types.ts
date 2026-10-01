@@ -10,6 +10,17 @@ export interface Attraction {
   lng: number;
   imageUrl: string;
   mapIframe?: string;
+  photoSpotUrl?: string | null;
+  photoPoseUrl?: string | null;
+  photoSpotRecommendation?: string | null;
+  photoPoseRecommendation?: string | null;
+  photoPoseSpotRecommendation?: string | null;
+  photoRecommendationUrl?: string | null;
+  photoSpot?: string | null;
+  photoPose?: string | null;
+  photoSpotRecomendation?: string | null;
+  photoPoseRecomendation?: string | null;
+  photoPoseSpotRecomendation?: string | null;
 }
 
 export interface TodoItem {

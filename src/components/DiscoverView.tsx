@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import { Attraction, Category } from '../types';
-import { Search, List, Map as MapIcon, Plus, X, Sparkles, Shuffle, MapPin } from 'lucide-react';
+import { Search, List, Map as MapIcon, Plus, X, Sparkles, Shuffle, MapPin, Camera, ExternalLink } from 'lucide-react';
 
 const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
   const R = 6371; // km
@@ -287,6 +287,56 @@ export function DiscoverView({ onAddToItinerary, attractions, selectedAttraction
                       <div className="w-full rounded-xl overflow-hidden border-2 border-primary shadow-sm bg-gray-100" dangerouslySetInnerHTML={{ __html: item.mapIframe }} />
                     )}
                     
+                    {(() => {
+                      const rawPhotoUrl =
+                        item.photoSpotUrl ||
+                        item.photoPoseUrl ||
+                        item.photoSpotRecommendation ||
+                        item.photoPoseRecommendation ||
+                        item.photoPoseSpotRecommendation ||
+                        item.photoRecommendationUrl ||
+                        item.photoSpot ||
+                        item.photoPose ||
+                        item.photoSpotRecomendation ||
+                        item.photoPoseRecomendation ||
+                        item.photoPoseSpotRecomendation;
+
+                      if (!rawPhotoUrl || typeof rawPhotoUrl !== 'string' || !rawPhotoUrl.trim()) {
+                        return null;
+                      }
+
+                      const photoUrl = rawPhotoUrl.trim().startsWith('http://') || rawPhotoUrl.trim().startsWith('https://')
+                        ? rawPhotoUrl.trim()
+                        : `https://${rawPhotoUrl.trim()}`;
+
+                      return (
+                        <div className="bg-red-50/70 border-2 border-primary/20 rounded-2xl p-4 flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                          <div className="flex items-center gap-3">
+                            <div className="w-10 h-10 rounded-xl bg-primary text-white flex items-center justify-center shrink-0 shadow-sm">
+                              <Camera className="w-5 h-5" />
+                            </div>
+                            <div>
+                              <div className="text-[10px] font-black uppercase tracking-widest text-primary/80">Photo Guide</div>
+                              <h4 className="font-black text-sm uppercase text-primary">Photo Pose & Spot Recommendation</h4>
+                              <p className="text-xs text-gray-600 mt-0.5">Explore best angles and recommended photo poses for this destination.</p>
+                            </div>
+                          </div>
+                          <a
+                            href={photoUrl}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            role="button"
+                            data-testid="photo-spot-recommendation-btn"
+                            className="px-5 py-3 bg-primary hover:bg-primary-dark text-white rounded-xl font-bold uppercase text-xs transition-colors shadow-sm inline-flex items-center justify-center gap-2 shrink-0 group text-center"
+                          >
+                            <Camera className="w-4 h-4" />
+                            <span>Photo Pose / Spot Recommendation</span>
+                            <ExternalLink className="w-3.5 h-3.5 group-hover:translate-x-0.5 transition-transform" />
+                          </a>
+                        </div>
+                      );
+                    })()}
+
                     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mt-2">
                       <button 
                         onClick={() => { onAddToItinerary(item.id); setSelectedAttraction(null); }}
