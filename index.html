@@ -1,19 +1,236 @@
 <!doctype html>
-<html lang="en">
+<html lang="id">
   <head>
+    <!-- Google tag (gtag.js) -->
+    <script
+      async
+      src="https://www.googletagmanager.com/gtag/js?id=G-2R4ND8KE73"
+    ></script>
+    <script>
+      window.dataLayer = window.dataLayer || [];
+      function gtag() {
+        dataLayer.push(arguments);
+      }
+      gtag("js", new Date());
+
+      gtag("config", "G-2R4ND8KE73");
+    </script>
+
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Banyuwangi Explorer</title>
-    <meta name="description" content="Discover and plan your trip to Banyuwangi." />
+    <title>BWI-Guide – Panduan Wisata, Peta & Itinerary Banyuwangi | SoreAja</title>
+
+    <!-- Meta Description & SEO Keywords -->
+    <meta
+      name="description"
+      content="Jelajahi wisata Banyuwangi dengan peta interaktif, spot foto estetik, rekomendasi paket itinerary liburan, dan travel planner lengkap dari SoreAja."
+    />
+    <meta
+      name="keywords"
+      content="wisata banyuwangi, panduan wisata banyuwangi, peta wisata banyuwangi, itinerary banyuwangi, liburan banyuwangi, kawah ijen, baluran, de djawatan, pulau merah, spot foto banyuwangi, travel planner banyuwangi, sewa digicam banyuwangi, soreaja, bwi guide"
+    />
+    <meta name="author" content="SoreAja" />
+    <meta name="robots" content="index, follow" />
+    <meta name="theme-color" content="#5C0F13" />
+
+    <!-- Canonical URL -->
+    <link rel="canonical" href="https://soreaja.my.id/" />
+
+    <!-- Favicons & Touch Icons -->
+    <link rel="icon" type="image/webp" href="/logo.webp" />
+    <link rel="icon" href="/favicon.ico" sizes="any" />
+    <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+    <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+    <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+    <link rel="manifest" href="/site.webmanifest" />
+
+    <!-- Google Fonts & Preconnect -->
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,100..900;1,100..900&family=Sue+Ellen+Francisco&display=swap"
+      rel="stylesheet"
+    />
+
+    <!-- Stylesheets: Leaflet Map & AOS Animations -->
     <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-    <meta property="og:title" content="Banyuwangi Explorer" />
-    <meta property="og:description" content="An application built with Google AI Studio." />
+    <link href="https://unpkg.com/aos@2.3.1/dist/aos.css" rel="stylesheet" />
+
+    <!-- Search Console Verification & Google AdSense -->
+    <meta
+      name="rbl-blog-verification"
+      content="dzw2zddmw50nnuurxtwxac8cmnt3gxko"
+    />
+    <meta name="google-adsense-account" content="ca-pub-3052628124471040" />
+    <script
+      async
+      src="https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js?client=ca-pub-3052628124471040"
+      crossorigin="anonymous"
+    ></script>
+
+    <!-- Open Graph / Social Sharing -->
     <meta property="og:type" content="website" />
+    <meta property="og:locale" content="id_ID" />
+    <meta property="og:site_name" content="BWI-Guide by SoreAja" />
+    <meta
+      property="og:title"
+      content="BWI-Guide – Panduan Wisata, Peta & Itinerary Banyuwangi | SoreAja"
+    />
+    <meta
+      property="og:description"
+      content="Jelajahi wisata Banyuwangi dengan peta interaktif, inspirasi spot foto estetik, rekomendasi paket itinerary, dan planner perjalanan dari SoreAja."
+    />
+    <meta property="og:url" content="https://soreaja.my.id/" />
+    <meta
+      property="og:image"
+      content="https://soreaja.my.id/og_thumbnail.png"
+    />
+    <meta property="og:image:alt" content="BWI-Guide - Panduan Wisata & Itinerary Banyuwangi by SoreAja" />
+
+    <!-- Twitter / X Card -->
     <meta name="twitter:card" content="summary_large_image" />
+    <meta
+      name="twitter:title"
+      content="BWI-Guide – Panduan Wisata, Peta & Itinerary Banyuwangi | SoreAja"
+    />
+    <meta
+      name="twitter:description"
+      content="Peta interaktif destinasi wisata Banyuwangi, spot foto estetik, paket itinerary, dan travel planner praktis by SoreAja."
+    />
+    <meta
+      name="twitter:image"
+      content="https://soreaja.my.id/og_thumbnail.png"
+    />
+
+    <!-- External UI Scripts -->
+    <script src="https://unpkg.com/aos@2.3.1/dist/aos.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+
+    <!-- Schema.org JSON-LD Structured Data: WebApplication + LocalBusiness + FAQPage -->
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@graph": [
+          {
+            "@type": "WebApplication",
+            "@id": "https://soreaja.my.id/#webapp",
+            "name": "BWI-Guide",
+            "alternateName": "Banyuwangi Tourist Guide & Planner",
+            "url": "https://soreaja.my.id",
+            "applicationCategory": "TravelApplication",
+            "operatingSystem": "All",
+            "description": "Aplikasi panduan wisata interaktif, pencari spot foto estetik, paket rekomendasi itinerary, dan trip planner untuk menjelajahi Banyuwangi.",
+            "offers": {
+              "@type": "Offer",
+              "price": "0",
+              "priceCurrency": "IDR"
+            },
+            "publisher": {
+              "@id": "https://soreaja.my.id/#organization"
+            }
+          },
+          {
+            "@type": "LocalBusiness",
+            "@id": "https://soreaja.my.id/#organization",
+            "name": "SoreAja",
+            "url": "https://soreaja.my.id",
+            "logo": "https://soreaja.my.id/Logo_border.webp",
+            "image": "https://soreaja.my.id/Logo_border.webp",
+            "description": "Layanan sewa digicam retro compact, photobox, dan panduan wisata Banyuwangi (BWI-Guide) untuk liburan, event, dan foto estetik.",
+            "areaServed": {
+              "@type": "City",
+              "name": "Banyuwangi"
+            },
+            "address": {
+              "@type": "PostalAddress",
+              "addressLocality": "Banyuwangi",
+              "addressRegion": "Jawa Timur",
+              "addressCountry": "ID"
+            },
+            "priceRange": "$$",
+            "makesOffer": [
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Panduan Wisata & Itinerary Planner Banyuwangi"
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Sewa Digicam Banyuwangi"
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Layanan Photobox Online"
+                }
+              },
+              {
+                "@type": "Offer",
+                "itemOffered": {
+                  "@type": "Service",
+                  "name": "Layanan Cetak Zines"
+                }
+              }
+            ]
+          },
+          {
+            "@type": "FAQPage",
+            "@id": "https://soreaja.my.id/#faq",
+            "mainEntity": [
+              {
+                "@type": "Question",
+                "name": "Apa itu BWI-Guide by SoreAja?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "BWI-Guide adalah platform panduan wisata digital Banyuwangi dari SoreAja yang menyediakan peta interaktif destinasi wisata, rekomendasi spot dan pose foto estetik, paket itinerary siap pakai, serta fitur itinerary planner perjalanan."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Destinasi wisata apa saja yang dapat dijelajahi di Banyuwangi?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Anda dapat menjelajahi destinasi populer seperti Kawah Ijen, Taman Nasional Baluran (Afrika van Java), Hutan De Djawatan Benculuk, Pantai Pulau Merah, Teluk Hijau (Green Bay), Pantai Sukamade, hingga ragam kuliner dan wisata budaya khas Banyuwangi."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Bagaimana cara menyusun jadwal perjalanan atau itinerary di BWI-Guide?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "BWI-Guide menyediakan paket rekomendasi itinerary siap pakai lengkap dengan rute dan jadwal waktu. Anda juga bisa membuat dan memodifikasi jadwal kustom sendiri melalui menu Planner lengkap dengan checklist to-do perjalanan."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Apakah tersedia layanan sewa digicam untuk foto estetik saat liburan di Banyuwangi?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Ya, SoreAja menyediakan layanan sewa digicam (kamera digital compact retro) dan photobox di Banyuwangi lengkap dengan baterai, kartu memori, strap, pouch, dan card reader untuk memindahkan hasil foto langsung ke smartphone."
+                }
+              },
+              {
+                "@type": "Question",
+                "name": "Bagaimana sistem dan syarat penyewaan kamera di SoreAja Banyuwangi?",
+                "acceptedAnswer": {
+                  "@type": "Answer",
+                  "text": "Penyewa wajib menitipkan identitas asli yang masih berlaku (E-KTP/SIM/KTM/Paspor) sebagai jaminan dan membayar DP 50% untuk mengunci tanggal pemesanan. Durasi sewa dihitung per 24 jam."
+                }
+              }
+            ]
+          }
+        ]
+      }
+    </script>
   </head>
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
-

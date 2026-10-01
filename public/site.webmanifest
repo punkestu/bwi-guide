@@ -1,0 +1,16 @@
+{
+  "name": "BWI-Guide - Panduan Wisata Banyuwangi by SoreAja",
+  "short_name": "BWI-Guide",
+  "description": "Panduan wisata interaktif, peta destinasi, spot foto estetik, dan itinerary planner Banyuwangi.",
+  "icons": [
+    {
+      "src": "/logo.webp",
+      "sizes": "192x192 512x512",
+      "type": "image/webp"
+    }
+  ],
+  "theme_color": "#5C0F13",
+  "background_color": "#5C0F13",
+  "display": "standalone",
+  "start_url": "/"
+}
