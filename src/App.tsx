@@ -2,13 +2,15 @@ import { useState, useEffect } from 'react';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { DiscoverView } from './components/DiscoverView';
 import { ItineraryPlanner } from './components/ItineraryPlanner';
+import { ItinerariesRecommendationView } from './components/ItinerariesRecommendationView';
 import { Itinerary, Attraction } from './types';
-import { Map, MapPin, CalendarDays, X, Plus, Loader2 } from 'lucide-react';
+import { Map, CalendarDays, X, Plus, Loader2, Compass } from 'lucide-react';
 
 export default function App() {
-  const [activeTab, setActiveTab] = useState<'discover' | 'planner'>('discover');
+  const [activeTab, setActiveTab] = useState<'discover' | 'recommendation' | 'planner'>('discover');
   const [itineraries, setItineraries] = useLocalStorage<Itinerary[]>('banyuwangi_itineraries', []);
   const [addingAttraction, setAddingAttraction] = useState<string | null>(null);
+  const [selectedAttractionId, setSelectedAttractionId] = useState<string | null>(null);
   const [attractions, setAttractions] = useState<Attraction[]>([]);
   const [loading, setLoading] = useState(true);
 
@@ -94,18 +96,28 @@ export default function App() {
               <a href="https://soreaja.my.id" target="_blank" rel="noopener noreferrer" className="text-[9px] text-white/70 hover:text-white uppercase tracking-widest leading-none mt-0.5">by SoreAja</a>
             </div>
           </div>
-          <nav className="flex gap-2">
+          <nav className="flex gap-1.5 sm:gap-2">
             <button
               onClick={() => setActiveTab('discover')}
-              className={`px-4 py-2 rounded-full text-xs font-bold uppercase transition-all flex items-center gap-2 ${
+              className={`px-3 sm:px-4 py-2 rounded-full text-xs font-bold uppercase transition-all flex items-center gap-1.5 sm:gap-2 ${
                 activeTab === 'discover' ? 'bg-white text-primary shadow-sm' : 'text-white/70 hover:text-white'
               }`}
             >
               <Map className="w-4 h-4" /> <span className="hidden sm:inline">Discover</span>
             </button>
             <button
+              onClick={() => setActiveTab('recommendation')}
+              className={`px-3 sm:px-4 py-2 rounded-full text-xs font-bold uppercase transition-all flex items-center gap-1.5 sm:gap-2 ${
+                activeTab === 'recommendation' ? 'bg-white text-primary shadow-sm' : 'text-white/70 hover:text-white'
+              }`}
+            >
+              <Compass className="w-4 h-4" />
+              <span className="hidden md:inline">Itineraries Recommendation</span>
+              <span className="hidden sm:inline md:hidden">Recommendation</span>
+            </button>
+            <button
               onClick={() => setActiveTab('planner')}
-              className={`px-4 py-2 rounded-full text-xs font-bold uppercase transition-all flex items-center gap-2 ${
+              className={`px-3 sm:px-4 py-2 rounded-full text-xs font-bold uppercase transition-all flex items-center gap-1.5 sm:gap-2 ${
                 activeTab === 'planner' ? 'bg-white text-primary shadow-sm' : 'text-white/70 hover:text-white'
               }`}
             >
@@ -116,10 +128,32 @@ export default function App() {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 mt-8">
-        {activeTab === 'discover' ? (
-          <DiscoverView onAddToItinerary={handleAddToItinerary} attractions={attractions} />
-        ) : (
-          <ItineraryPlanner itineraries={itineraries} setItineraries={setItineraries} attractions={attractions} />
+        {activeTab === 'discover' && (
+          <DiscoverView
+            onAddToItinerary={handleAddToItinerary}
+            attractions={attractions}
+            selectedAttractionId={selectedAttractionId}
+            onSelectAttraction={setSelectedAttractionId}
+          />
+        )}
+        {activeTab === 'recommendation' && (
+          <ItinerariesRecommendationView
+            attractions={attractions}
+            itineraries={itineraries}
+            setItineraries={setItineraries}
+            onAttractionClick={(attractionId) => {
+              setSelectedAttractionId(attractionId);
+              setActiveTab('discover');
+            }}
+            onNavigateToPlanner={() => setActiveTab('planner')}
+          />
+        )}
+        {activeTab === 'planner' && (
+          <ItineraryPlanner
+            itineraries={itineraries}
+            setItineraries={setItineraries}
+            attractions={attractions}
+          />
         )}
       </main>
 

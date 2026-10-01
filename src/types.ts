@@ -34,3 +34,18 @@ export interface Itinerary {
   todos: TodoItem[];
   photos?: string[];
 }
+
+export interface RecommendedItineraryItem {
+  place_id: string;
+  start_time: string;
+  end_time: string;
+  thumbnail: string | null;
+}
+
+export interface RecommendedItineraryPackage {
+  id: number | string;
+  name: string;
+  thumbnail: string;
+  itineraries: RecommendedItineraryItem[];
+  checklists?: Record<string, string[]>;
+}

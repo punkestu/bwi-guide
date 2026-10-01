@@ -1,6 +1,6 @@
-import React, { useState } from 'react';
+import React, { useState, useRef } from 'react';
 import { Itinerary, TodoItem, ScheduledItem, Attraction } from '../types';
-import { Trash2, Plus, CheckCircle2, Circle, ChevronRight, ArrowLeft, Edit2, Check, Camera, Download } from 'lucide-react';
+import { Trash2, Plus, CheckCircle2, Circle, ChevronRight, ArrowLeft, Edit2, Check, Camera, Download, Upload } from 'lucide-react';
 
 interface ItineraryPlannerProps {
   itineraries: Itinerary[];
@@ -19,6 +19,42 @@ export function ItineraryPlanner({ itineraries, setItineraries, attractions }: I
   
   const [editingTodoId, setEditingTodoId] = useState<string | null>(null);
   const [editTodoValue, setEditTodoValue] = useState('');
+
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const exportData = () => {
+    const dataStr = JSON.stringify(itineraries, null, 2);
+    const blob = new Blob([dataStr], { type: "application/json" });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `bwi-guide-itineraries-${new Date().toISOString().split('T')[0]}.json`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleImport = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      try {
+        const importedData = JSON.parse(event.target?.result as string);
+        if (Array.isArray(importedData)) {
+          setItineraries(importedData);
+        } else {
+          alert('Invalid file format. Expected an array of itineraries.');
+        }
+      } catch (err) {
+        alert('Error parsing the file.');
+      }
+    };
+    reader.readAsText(file);
+    if (fileInputRef.current) fileInputRef.current.value = '';
+  };
 
   const createItinerary = () => {
     if (!newTitle.trim()) return;
@@ -87,10 +123,10 @@ export function ItineraryPlanner({ itineraries, setItineraries, attractions }: I
     } : i));
   };
 
-  const updateScheduleTime = (schedId: string, field: 'time'|'date', value: string) => {
+  const updateScheduleDateTime = (schedId: string, date: string, time: string) => {
     setItineraries(prev => prev.map(i => i.id === activeId ? {
       ...i,
-      schedule: i.schedule?.map(s => s.id === schedId ? { ...s, [field]: value } : s)
+      schedule: i.schedule?.map(s => s.id === schedId ? { ...s, date, time } : s)
     } : i));
   };
 
@@ -234,8 +270,7 @@ export function ItineraryPlanner({ itineraries, setItineraries, attractions }: I
                           onChange={(e) => {
                             if (e.target.value) {
                               const [d, t] = e.target.value.split('T');
-                              updateScheduleTime(sched.id, 'date', d);
-                              updateScheduleTime(sched.id, 'time', t);
+                              updateScheduleDateTime(sched.id, d, t);
                             }
                           }}
                           onClick={(e) => {
@@ -372,19 +407,30 @@ export function ItineraryPlanner({ itineraries, setItineraries, attractions }: I
 
   return (
     <div className="flex flex-col gap-8">
-      <div className="bg-white p-4 md:p-6 rounded-2xl shadow-md border-b-4 border-r-4 border-primary flex gap-3 md:gap-4 max-w-2xl mx-auto w-full">
-        <input 
-          type="text"
-          placeholder="NEW TRIP NAME"
-          value={newTitle}
-          onChange={e => setNewTitle(e.target.value)}
-          onKeyDown={e => e.key === 'Enter' && createItinerary()}
-          className="flex-1 px-4 md:px-5 py-3 md:py-4 rounded-xl border border-gray-200 bg-gray-50 focus:border-primary focus:bg-white outline-none md:text-sm font-bold uppercase transition-all"
-        />
-        <button onClick={createItinerary} className="px-6 md:px-8 py-3 md:py-4 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors font-bold uppercase text-xs flex items-center gap-2">
-          <Plus className="w-5 h-5" />
-          <span className="hidden sm:inline">Create</span>
-        </button>
+      <div className="bg-white p-4 md:p-6 rounded-2xl shadow-md border-b-4 border-r-4 border-primary flex flex-col gap-4 max-w-2xl mx-auto w-full">
+        <div className="flex gap-3 md:gap-4">
+          <input 
+            type="text"
+            placeholder="NEW TRIP NAME"
+            value={newTitle}
+            onChange={e => setNewTitle(e.target.value)}
+            onKeyDown={e => e.key === 'Enter' && createItinerary()}
+            className="flex-1 px-4 md:px-5 py-3 md:py-4 rounded-xl border border-gray-200 bg-gray-50 focus:border-primary focus:bg-white outline-none md:text-sm font-bold uppercase transition-all"
+          />
+          <button onClick={createItinerary} className="px-6 md:px-8 py-3 md:py-4 bg-primary text-white rounded-xl hover:bg-primary-dark transition-colors font-bold uppercase text-xs flex items-center gap-2">
+            <Plus className="w-5 h-5" />
+            <span className="hidden sm:inline">Create</span>
+          </button>
+        </div>
+        <div className="flex gap-2 justify-end pt-2 border-t border-gray-100">
+          <input type="file" accept=".json" onChange={handleImport} ref={fileInputRef} className="hidden" />
+          <button onClick={() => fileInputRef.current?.click()} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-bold uppercase text-[10px] flex items-center gap-2">
+            <Upload className="w-4 h-4" /> Import JSON
+          </button>
+          <button onClick={exportData} className="px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 transition-colors font-bold uppercase text-[10px] flex items-center gap-2">
+            <Download className="w-4 h-4" /> Export JSON
+          </button>
+        </div>
       </div>
 
       {itineraries.length === 0 ? (

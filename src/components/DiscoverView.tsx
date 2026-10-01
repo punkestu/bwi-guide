@@ -32,13 +32,20 @@ const userIcon = L.divIcon({
 interface DiscoverViewProps {
   onAddToItinerary: (attractionId: string) => void;
   attractions: Attraction[];
+  selectedAttractionId?: string | null;
+  onSelectAttraction?: (id: string | null) => void;
 }
 
-export function DiscoverView({ onAddToItinerary, attractions }: DiscoverViewProps) {
+export function DiscoverView({ onAddToItinerary, attractions, selectedAttractionId, onSelectAttraction }: DiscoverViewProps) {
   const [search, setSearch] = useState('');
   const [category, setCategory] = useState<Category | 'all'>('all');
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
-  const [selectedAttraction, setSelectedAttraction] = useState<string | null>(null);
+  const [internalSelectedAttraction, setInternalSelectedAttraction] = useState<string | null>(null);
+  const selectedAttraction = selectedAttractionId !== undefined ? selectedAttractionId : internalSelectedAttraction;
+  const setSelectedAttraction = (id: string | null) => {
+    onSelectAttraction?.(id);
+    setInternalSelectedAttraction(id);
+  };
   const [randomSuggestion, setRandomSuggestion] = useState<string | null>(null);
   const [highlightIndex, setHighlightIndex] = useState(0);
   const [userLocation, setUserLocation] = useState<[number, number] | null>(null);
