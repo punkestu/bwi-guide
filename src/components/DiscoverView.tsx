@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import { Attraction, Category } from '../types';
@@ -37,14 +38,69 @@ interface DiscoverViewProps {
 }
 
 export function DiscoverView({ onAddToItinerary, attractions, selectedAttractionId, onSelectAttraction }: DiscoverViewProps) {
-  const [search, setSearch] = useState('');
-  const [category, setCategory] = useState<Category | 'all'>('all');
+  const params = useParams<{ id?: string }>();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const navigate = useNavigate();
+
+  const routeAttractionId = params.id || searchParams.get('attraction') || searchParams.get('id');
+
+  const urlSearch = searchParams.get('search') ?? searchParams.get('q') ?? searchParams.get('query') ?? '';
+  const urlCategory = (searchParams.get('category') as Category) || 'all';
+
+  const [search, setSearch] = useState(urlSearch);
+  const [category, setCategory] = useState<Category | 'all'>(urlCategory);
   const [viewMode, setViewMode] = useState<'list' | 'map'>('list');
   const [internalSelectedAttraction, setInternalSelectedAttraction] = useState<string | null>(null);
-  const selectedAttraction = selectedAttractionId !== undefined ? selectedAttractionId : internalSelectedAttraction;
+
+  // Sync state if URL query params change (e.g. back/forward navigation)
+  useEffect(() => {
+    const q = searchParams.get('search') ?? searchParams.get('q') ?? searchParams.get('query') ?? '';
+    setSearch(q);
+    const cat = (searchParams.get('category') as Category) || 'all';
+    setCategory(cat);
+  }, [searchParams]);
+
+  // Selected attraction resolves from prop, route param, query param, or internal state
+  const selectedAttraction = selectedAttractionId !== undefined && selectedAttractionId !== null
+    ? selectedAttractionId
+    : (routeAttractionId || internalSelectedAttraction);
+
   const setSelectedAttraction = (id: string | null) => {
     onSelectAttraction?.(id);
     setInternalSelectedAttraction(id);
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.delete('attraction');
+    nextParams.delete('id');
+    const queryString = nextParams.toString() ? `?${nextParams.toString()}` : '';
+    if (id) {
+      navigate(`/discover/attraction/${id}${queryString}`);
+    } else {
+      navigate(`/discover${queryString}`);
+    }
+  };
+
+  const handleSearchChange = (value: string) => {
+    setSearch(value);
+    const nextParams = new URLSearchParams(searchParams);
+    if (value.trim()) {
+      nextParams.set('search', value);
+    } else {
+      nextParams.delete('search');
+      nextParams.delete('q');
+      nextParams.delete('query');
+    }
+    setSearchParams(nextParams, { replace: true });
+  };
+
+  const handleCategoryChange = (cat: Category | 'all') => {
+    setCategory(cat);
+    const nextParams = new URLSearchParams(searchParams);
+    if (cat && cat !== 'all') {
+      nextParams.set('category', cat);
+    } else {
+      nextParams.delete('category');
+    }
+    setSearchParams(nextParams, { replace: true });
   };
   const [randomSuggestion, setRandomSuggestion] = useState<string | null>(null);
   const [highlightIndex, setHighlightIndex] = useState(0);
@@ -146,7 +202,7 @@ export function DiscoverView({ onAddToItinerary, attractions, selectedAttraction
             type="text" 
             placeholder="Search attractions, events, foods..." 
             value={search}
-            onChange={(e) => setSearch(e.target.value)}
+            onChange={(e) => handleSearchChange(e.target.value)}
             className="w-full pl-10 pr-4 py-2 rounded-full border border-gray-200 bg-gray-50 focus:border-primary focus:bg-white focus:outline-none transition-all"
           />
         </div>
@@ -154,7 +210,7 @@ export function DiscoverView({ onAddToItinerary, attractions, selectedAttraction
           {allCategories.map(cat => (
             <button
               key={cat}
-              onClick={() => setCategory(cat)}
+              onClick={() => handleCategoryChange(cat)}
               className={`px-4 py-2 rounded-xl text-xs font-bold uppercase whitespace-nowrap transition-colors flex items-center gap-2 ${
                 category === cat ? 'bg-primary text-white' : 'text-gray-700 hover:bg-red-50'
               }`}

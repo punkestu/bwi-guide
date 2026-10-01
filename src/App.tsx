@@ -1,4 +1,13 @@
 import { useState, useEffect } from 'react';
+import {
+  BrowserRouter,
+  Routes,
+  Route,
+  Navigate,
+  useNavigate,
+  useLocation,
+  useInRouterContext
+} from 'react-router-dom';
 import { useLocalStorage } from './hooks/useLocalStorage';
 import { DiscoverView } from './components/DiscoverView';
 import { ItineraryPlanner } from './components/ItineraryPlanner';
@@ -6,13 +15,22 @@ import { ItinerariesRecommendationView } from './components/ItinerariesRecommend
 import { Itinerary, Attraction } from './types';
 import { Map, CalendarDays, X, Plus, Loader2, Compass } from 'lucide-react';
 
-export default function App() {
-  const [activeTab, setActiveTab] = useState<'discover' | 'recommendation' | 'planner'>('discover');
+function AppContent() {
+  const navigate = useNavigate();
+  const location = useLocation();
   const [itineraries, setItineraries] = useLocalStorage<Itinerary[]>('banyuwangi_itineraries', []);
   const [addingAttraction, setAddingAttraction] = useState<string | null>(null);
   const [selectedAttractionId, setSelectedAttractionId] = useState<string | null>(null);
   const [attractions, setAttractions] = useState<Attraction[]>([]);
   const [loading, setLoading] = useState(true);
+
+  // Support hash routing compatibility if someone lands on /#/path
+  useEffect(() => {
+    const hash = window.location.hash;
+    if (hash.startsWith('#/') && hash.length > 2) {
+      navigate(hash.slice(1), { replace: true });
+    }
+  }, [navigate]);
 
   useEffect(() => {
     fetch('https://raw.githubusercontent.com/punkestu/bwi-guide-data/refs/heads/main/attractions-data.json')
@@ -49,7 +67,6 @@ export default function App() {
     
     setItineraries(prev => prev.map(i => {
       if (i.id === itineraryId) {
-        // check if it's already there
         const alreadyHas = i.schedule?.some(s => s.attractionId === addingAttraction) || i.attractionIds.includes(addingAttraction);
         if (!alreadyHas) {
           const newScheduleItem = {
@@ -82,10 +99,25 @@ export default function App() {
     };
     setItineraries(prev => [...prev, newItinerary]);
     setAddingAttraction(null);
-    setActiveTab('planner'); 
+    navigate('/planner'); 
   };
 
   const attractionToAdd = addingAttraction ? attractions.find(d => d.id === addingAttraction) : null;
+
+  const isDiscoverActive =
+    location.pathname === '/' ||
+    location.pathname.startsWith('/discover') ||
+    location.pathname.startsWith('/attraction') ||
+    location.pathname.startsWith('/search');
+
+  const isRecommendationActive =
+    location.pathname.startsWith('/recommendation') ||
+    location.pathname.startsWith('/itineraries-recommendation');
+
+  const isPlannerActive =
+    location.pathname.startsWith('/planner') ||
+    location.pathname.startsWith('/my-itineraries') ||
+    location.pathname.startsWith('/itineraries');
 
   if (loading) {
     return (
@@ -102,26 +134,29 @@ export default function App() {
     <div className="min-h-screen text-gray-900 pb-12 font-sans">
       <header className="bg-primary-dark text-white shadow-lg sticky top-0 z-10 border-b-4 border-red-950">
         <div className="max-w-6xl mx-auto px-4 h-16 flex items-center justify-between">
-          <div className="flex items-center gap-3 font-black text-xl tracking-widest uppercase">
+          <div
+            onClick={() => navigate('/discover')}
+            className="flex items-center gap-3 font-black text-xl tracking-widest uppercase cursor-pointer"
+          >
             <img src="/logo.webp" className="w-9 h-9 rounded-full object-cover shadow-sm bg-white" alt="Logo" onError={(e) => { e.currentTarget.src = 'https://placehold.co/100x100/82181a/fff?text=SA'; }} />
             <div className="flex flex-col">
               <span>BWI-Guide</span>
-              <a href="https://soreaja.my.id" target="_blank" rel="noopener noreferrer" className="text-[9px] text-white/70 hover:text-white uppercase tracking-widest leading-none mt-0.5">by SoreAja</a>
+              <a href="https://soreaja.my.id" target="_blank" rel="noopener noreferrer" className="text-[9px] text-white/70 hover:text-white uppercase tracking-widest leading-none mt-0.5" onClick={(e) => e.stopPropagation()}>by SoreAja</a>
             </div>
           </div>
           <nav className="flex gap-1.5 sm:gap-2">
             <button
-              onClick={() => setActiveTab('discover')}
+              onClick={() => navigate('/discover')}
               className={`px-3 sm:px-4 py-2 rounded-full text-xs font-bold uppercase transition-all flex items-center gap-1.5 sm:gap-2 ${
-                activeTab === 'discover' ? 'bg-white text-primary shadow-sm' : 'text-white/70 hover:text-white'
+                isDiscoverActive ? 'bg-white text-primary shadow-sm' : 'text-white/70 hover:text-white'
               }`}
             >
               <Map className="w-4 h-4" /> <span className="hidden sm:inline">Discover</span>
             </button>
             <button
-              onClick={() => setActiveTab('recommendation')}
+              onClick={() => navigate('/recommendation')}
               className={`px-3 sm:px-4 py-2 rounded-full text-xs font-bold uppercase transition-all flex items-center gap-1.5 sm:gap-2 ${
-                activeTab === 'recommendation' ? 'bg-white text-primary shadow-sm' : 'text-white/70 hover:text-white'
+                isRecommendationActive ? 'bg-white text-primary shadow-sm' : 'text-white/70 hover:text-white'
               }`}
             >
               <Compass className="w-4 h-4" />
@@ -129,9 +164,9 @@ export default function App() {
               <span className="hidden sm:inline md:hidden">Recommendation</span>
             </button>
             <button
-              onClick={() => setActiveTab('planner')}
+              onClick={() => navigate('/planner')}
               className={`px-3 sm:px-4 py-2 rounded-full text-xs font-bold uppercase transition-all flex items-center gap-1.5 sm:gap-2 ${
-                activeTab === 'planner' ? 'bg-white text-primary shadow-sm' : 'text-white/70 hover:text-white'
+                isPlannerActive ? 'bg-white text-primary shadow-sm' : 'text-white/70 hover:text-white'
               }`}
             >
               <CalendarDays className="w-4 h-4" /> <span className="hidden sm:inline">My Itineraries</span>
@@ -141,33 +176,169 @@ export default function App() {
       </header>
 
       <main className="max-w-6xl mx-auto px-4 mt-8">
-        {activeTab === 'discover' && (
-          <DiscoverView
-            onAddToItinerary={handleAddToItinerary}
-            attractions={attractions}
-            selectedAttractionId={selectedAttractionId}
-            onSelectAttraction={setSelectedAttractionId}
+        <Routes>
+          <Route path="/" element={<Navigate to="/discover" replace />} />
+          <Route
+            path="/discover"
+            element={
+              <DiscoverView
+                onAddToItinerary={handleAddToItinerary}
+                attractions={attractions}
+                selectedAttractionId={selectedAttractionId}
+                onSelectAttraction={setSelectedAttractionId}
+              />
+            }
           />
-        )}
-        {activeTab === 'recommendation' && (
-          <ItinerariesRecommendationView
-            attractions={attractions}
-            itineraries={itineraries}
-            setItineraries={setItineraries}
-            onAttractionClick={(attractionId) => {
-              setSelectedAttractionId(attractionId);
-              setActiveTab('discover');
-            }}
-            onNavigateToPlanner={() => setActiveTab('planner')}
+          <Route
+            path="/discover/attraction/:id"
+            element={
+              <DiscoverView
+                onAddToItinerary={handleAddToItinerary}
+                attractions={attractions}
+                selectedAttractionId={selectedAttractionId}
+                onSelectAttraction={setSelectedAttractionId}
+              />
+            }
           />
-        )}
-        {activeTab === 'planner' && (
-          <ItineraryPlanner
-            itineraries={itineraries}
-            setItineraries={setItineraries}
-            attractions={attractions}
+          <Route
+            path="/discover/:id"
+            element={
+              <DiscoverView
+                onAddToItinerary={handleAddToItinerary}
+                attractions={attractions}
+                selectedAttractionId={selectedAttractionId}
+                onSelectAttraction={setSelectedAttractionId}
+              />
+            }
           />
-        )}
+          <Route
+            path="/attraction/:id"
+            element={
+              <DiscoverView
+                onAddToItinerary={handleAddToItinerary}
+                attractions={attractions}
+                selectedAttractionId={selectedAttractionId}
+                onSelectAttraction={setSelectedAttractionId}
+              />
+            }
+          />
+          <Route
+            path="/attractions/:id"
+            element={
+              <DiscoverView
+                onAddToItinerary={handleAddToItinerary}
+                attractions={attractions}
+                selectedAttractionId={selectedAttractionId}
+                onSelectAttraction={setSelectedAttractionId}
+              />
+            }
+          />
+          <Route
+            path="/search"
+            element={
+              <DiscoverView
+                onAddToItinerary={handleAddToItinerary}
+                attractions={attractions}
+                selectedAttractionId={selectedAttractionId}
+                onSelectAttraction={setSelectedAttractionId}
+              />
+            }
+          />
+
+          <Route
+            path="/recommendation"
+            element={
+              <ItinerariesRecommendationView
+                attractions={attractions}
+                itineraries={itineraries}
+                setItineraries={setItineraries}
+                onAttractionClick={(attractionId) => {
+                  setSelectedAttractionId(attractionId);
+                  navigate(`/discover/attraction/${attractionId}`);
+                }}
+                onNavigateToPlanner={() => navigate('/planner')}
+              />
+            }
+          />
+          <Route
+            path="/recommendation/:packageId"
+            element={
+              <ItinerariesRecommendationView
+                attractions={attractions}
+                itineraries={itineraries}
+                setItineraries={setItineraries}
+                onAttractionClick={(attractionId) => {
+                  setSelectedAttractionId(attractionId);
+                  navigate(`/discover/attraction/${attractionId}`);
+                }}
+                onNavigateToPlanner={() => navigate('/planner')}
+              />
+            }
+          />
+          <Route
+            path="/recommendations"
+            element={<Navigate to="/recommendation" replace />}
+          />
+          <Route
+            path="/recommendations/:packageId"
+            element={<Navigate to="/recommendation" replace />}
+          />
+          <Route
+            path="/itineraries-recommendation"
+            element={
+              <ItinerariesRecommendationView
+                attractions={attractions}
+                itineraries={itineraries}
+                setItineraries={setItineraries}
+                onAttractionClick={(attractionId) => {
+                  setSelectedAttractionId(attractionId);
+                  navigate(`/discover/attraction/${attractionId}`);
+                }}
+                onNavigateToPlanner={() => navigate('/planner')}
+              />
+            }
+          />
+          <Route
+            path="/itineraries-recommendation/:packageId"
+            element={
+              <ItinerariesRecommendationView
+                attractions={attractions}
+                itineraries={itineraries}
+                setItineraries={setItineraries}
+                onAttractionClick={(attractionId) => {
+                  setSelectedAttractionId(attractionId);
+                  navigate(`/discover/attraction/${attractionId}`);
+                }}
+                onNavigateToPlanner={() => navigate('/planner')}
+              />
+            }
+          />
+
+          <Route
+            path="/planner"
+            element={
+              <ItineraryPlanner
+                itineraries={itineraries}
+                setItineraries={setItineraries}
+                attractions={attractions}
+              />
+            }
+          />
+          <Route
+            path="/planner/:itineraryId"
+            element={
+              <ItineraryPlanner
+                itineraries={itineraries}
+                setItineraries={setItineraries}
+                attractions={attractions}
+              />
+            }
+          />
+          <Route path="/my-itineraries" element={<Navigate to="/planner" replace />} />
+          <Route path="/itineraries" element={<Navigate to="/planner" replace />} />
+
+          <Route path="*" element={<Navigate to="/discover" replace />} />
+        </Routes>
       </main>
 
       {/* Modal */}
@@ -215,4 +386,16 @@ export default function App() {
       )}
     </div>
   );
+}
+
+export default function App() {
+  const inRouter = useInRouterContext();
+  if (!inRouter) {
+    return (
+      <BrowserRouter>
+        <AppContent />
+      </BrowserRouter>
+    );
+  }
+  return <AppContent />;
 }

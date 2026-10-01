@@ -1,4 +1,5 @@
 import { useState, useEffect } from 'react';
+import { useParams, useSearchParams } from 'react-router-dom';
 import { Attraction, Itinerary, RecommendedItineraryPackage, TodoItem } from '../types';
 import { Sparkles, Calendar, Clock, MapPin, CheckCircle, ChevronRight, Check, Compass, AlertCircle, ArrowRight, BookmarkCheck, ExternalLink, RefreshCw, RotateCcw, CalendarDays } from 'lucide-react';
 
@@ -61,10 +62,14 @@ export function ItinerariesRecommendationView({
   onAttractionClick,
   onNavigateToPlanner
 }: ItinerariesRecommendationViewProps) {
+  const params = useParams<{ packageId?: string }>();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const urlPackageId = params.packageId || searchParams.get('package') || searchParams.get('packageId');
+
   const [packages, setPackages] = useState<RecommendedItineraryPackage[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [selectedPackageId, setSelectedPackageId] = useState<string | number | null>(null);
+  const [selectedPackageId, setSelectedPackageId] = useState<string | number | null>(urlPackageId || null);
   const [customStartDate, setCustomStartDate] = useState<string>('');
   const [appliedNotification, setAppliedNotification] = useState<string | null>(null);
   const [appliedDateRange, setAppliedDateRange] = useState<{ start: string; end: string } | null>(null);
@@ -80,7 +85,8 @@ export function ItinerariesRecommendationView({
       .then((data: RecommendedItineraryPackage[]) => {
         setPackages(data);
         if (data.length > 0) {
-          setSelectedPackageId(data[0].id);
+          const match = urlPackageId ? data.find(p => String(p.id) === String(urlPackageId)) : null;
+          setSelectedPackageId(match ? match.id : data[0].id);
         }
         setLoading(false);
       })
@@ -94,6 +100,22 @@ export function ItinerariesRecommendationView({
   useEffect(() => {
     fetchPackages();
   }, []);
+
+  useEffect(() => {
+    if (urlPackageId && packages.length > 0) {
+      const match = packages.find(p => String(p.id) === String(urlPackageId));
+      if (match) {
+        setSelectedPackageId(match.id);
+      }
+    }
+  }, [urlPackageId, packages]);
+
+  const handleSelectPackage = (pkgId: string | number) => {
+    setSelectedPackageId(pkgId);
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.set('package', String(pkgId));
+    setSearchParams(nextParams, { replace: true });
+  };
 
   const activePackage = packages.find(pkg => String(pkg.id) === String(selectedPackageId)) || packages[0];
   const baseOrigDate = getPackageOriginalStartDate(activePackage);
@@ -232,7 +254,7 @@ export function ItinerariesRecommendationView({
             <a
               href="#recomendation-detail"
               key={pkg.id}
-              onClick={() => setSelectedPackageId(pkg.id)}
+              onClick={() => handleSelectPackage(pkg.id)}
               className={`cursor-pointer rounded-2xl p-4 md:p-5 transition-all flex flex-col sm:flex-row gap-4 border-b-4 border-r-4 ${
                 isSelected
                   ? 'bg-white border-primary shadow-lg ring-2 ring-primary/20 scale-[1.01]'
