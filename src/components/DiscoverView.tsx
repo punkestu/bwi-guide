@@ -4,6 +4,7 @@ import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import { Attraction, Category } from '../types';
 import { Search, List, Map as MapIcon, Plus, X, Sparkles, Shuffle, MapPin, Camera, ExternalLink, Eye } from 'lucide-react';
+import { handleImageError, getSafeImageSrc } from '../utils/imageFallback';
 
 const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
   const R = 6371; // km
@@ -169,8 +170,13 @@ export function DiscoverView({ onAddToItinerary, attractions, selectedAttraction
           <div className="absolute top-4 left-4 bg-primary text-white px-3 py-1.5 rounded-full text-[10px] font-black uppercase tracking-widest z-10 flex items-center gap-1 shadow-md">
             <Sparkles className="w-3 h-3" /> Hourly Highlight
           </div>
-          <div className="md:w-1/3 h-48 md:h-auto relative">
-            <img src={highlightedItem.imageUrl} alt={highlightedItem.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+          <div className="md:w-1/3 h-48 md:h-auto relative bg-red-950/20">
+            <img
+              src={getSafeImageSrc(highlightedItem.imageUrl)}
+              onError={handleImageError}
+              alt={highlightedItem.name}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+            />
             <div className="absolute inset-0 bg-black/10"></div>
           </div>
           <div className="p-6 flex flex-col justify-center flex-1">
@@ -258,11 +264,16 @@ export function DiscoverView({ onAddToItinerary, attractions, selectedAttraction
                   <div className="w-48 flex flex-col gap-2 p-0.5">
                     {item.imageUrl && (
                       <div
-                        className="w-full h-24 rounded-lg overflow-hidden cursor-pointer relative group"
+                        className="w-full h-24 rounded-lg overflow-hidden cursor-pointer relative group bg-red-950/20"
                         onClick={() => setSelectedAttraction(item.id)}
                         title="Click to view attraction detail"
                       >
-                        <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                        <img
+                          src={getSafeImageSrc(item.imageUrl)}
+                          onError={handleImageError}
+                          alt={item.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform"
+                        />
                         <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
                         <span className="absolute bottom-1 right-1 bg-black/60 text-white text-[9px] font-bold px-1.5 py-0.5 rounded backdrop-blur-xs uppercase">
                           {item.category}
@@ -311,8 +322,13 @@ export function DiscoverView({ onAddToItinerary, attractions, selectedAttraction
               onClick={() => setSelectedAttraction(item.id)}
               className="bg-white rounded-2xl overflow-hidden shadow-md border-b-4 border-r-4 border-primary flex flex-col cursor-pointer hover:bg-gray-50 transition-colors group"
             >
-              <div className="h-48 overflow-hidden relative shrink-0">
-                <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" />
+              <div className="h-48 overflow-hidden relative shrink-0 bg-red-950/20">
+                <img
+                  src={getSafeImageSrc(item.imageUrl)}
+                  onError={handleImageError}
+                  alt={item.name}
+                  className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                />
                 <div className="absolute inset-0 bg-black/10"></div>
                 <div className="absolute top-3 right-3 bg-white px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-widest text-primary border border-primary">
                   {item.category}
@@ -350,8 +366,13 @@ export function DiscoverView({ onAddToItinerary, attractions, selectedAttraction
               if (!item) return null;
               return (
                 <>
-                  <div className="relative h-64 shrink-0">
-                    <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover" />
+                  <div className="relative h-64 shrink-0 bg-red-950/20">
+                    <img
+                      src={getSafeImageSrc(item.imageUrl)}
+                      onError={handleImageError}
+                      alt={item.name}
+                      className="w-full h-full object-cover"
+                    />
                     <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent"></div>
                     <button 
                       onClick={() => setSelectedAttraction(null)} 
@@ -447,8 +468,13 @@ export function DiscoverView({ onAddToItinerary, attractions, selectedAttraction
                             <div className="absolute top-2 left-2 bg-white/90 text-primary px-2 py-0.5 rounded text-[9px] font-black uppercase tracking-widest z-10 shadow-sm backdrop-blur flex items-center gap-1">
                                <Shuffle className="w-3 h-3" /> Next Suggestion
                             </div>
-                            <div className="h-16 relative">
-                              <img src={rec.imageUrl} className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt={rec.name} />
+                            <div className="h-16 relative bg-red-950/20">
+                              <img
+                                src={getSafeImageSrc(rec.imageUrl)}
+                                onError={handleImageError}
+                                className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                                alt={rec.name}
+                              />
                               <div className="absolute inset-0 bg-black/20"></div>
                             </div>
                             <div className="p-2 flex-1 flex items-center justify-center text-center">
@@ -480,8 +506,13 @@ export function DiscoverView({ onAddToItinerary, attractions, selectedAttraction
                                 onClick={() => setSelectedAttraction(nearItem.id)}
                                 className="min-w-[140px] max-w-[140px] bg-white border-2 border-gray-100 rounded-xl overflow-hidden cursor-pointer hover:border-primary transition-colors flex flex-col group shrink-0"
                               >
-                                <div className="h-24 overflow-hidden relative">
-                                  <img src={nearItem.imageUrl} alt={nearItem.name} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" />
+                                <div className="h-24 overflow-hidden relative bg-red-950/20">
+                                  <img
+                                    src={getSafeImageSrc(nearItem.imageUrl)}
+                                    onError={handleImageError}
+                                    alt={nearItem.name}
+                                    className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500"
+                                  />
                                   <div className="absolute bottom-1 right-1 bg-black/70 text-white text-[9px] font-bold px-1.5 py-0.5 rounded backdrop-blur-sm">
                                     {nearItem.distance.toFixed(1)} km
                                   </div>

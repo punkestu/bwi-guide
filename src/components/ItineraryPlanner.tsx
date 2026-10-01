@@ -1,6 +1,7 @@
 import React, { useState, useRef } from 'react';
 import { Itinerary, TodoItem, ScheduledItem, Attraction } from '../types';
 import { Trash2, Plus, CheckCircle2, Circle, ChevronRight, ArrowLeft, Edit2, Check, Camera, Download, Upload } from 'lucide-react';
+import { handleImageError, getSafeImageSrc } from '../utils/imageFallback';
 
 interface ItineraryPlannerProps {
   itineraries: Itinerary[];
@@ -283,7 +284,12 @@ export function ItineraryPlanner({ itineraries, setItineraries, attractions }: I
                           <span className="text-xs">{sched.time || '09:00'}</span>
                         </div>
                       </div>
-                      <img src={attr.imageUrl} className="w-12 h-12 rounded-xl object-cover shrink-0" alt={attr.name} />
+                      <img
+                        src={getSafeImageSrc(attr.imageUrl)}
+                        onError={handleImageError}
+                        className="w-12 h-12 rounded-xl object-cover shrink-0 bg-red-950/20"
+                        alt={attr.name}
+                      />
                       <div className="flex-1 min-w-0">
                         <h4 className="font-bold text-sm text-gray-800 uppercase truncate">{attr.name}</h4>
                         <span className="text-[10px] font-bold text-primary uppercase tracking-wider">{attr.category}</span>
@@ -387,7 +393,7 @@ export function ItineraryPlanner({ itineraries, setItineraries, attractions }: I
             ) : (
                activeItinerary.photos.map((photo, idx) => (
                  <div key={idx} className="relative group aspect-square rounded-2xl overflow-hidden border-2 border-gray-100 bg-gray-50">
-                   <img src={photo} alt={`Trip photo ${idx + 1}`} className="w-full h-full object-cover" />
+                   <img src={getSafeImageSrc(photo)} onError={handleImageError} alt={`Trip photo ${idx + 1}`} className="w-full h-full object-cover" />
                    <div className="absolute inset-0 bg-black/60 opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center gap-3">
                      <a href={photo} download={`trip-photo-${idx + 1}.jpg`} className="p-2.5 bg-white text-primary rounded-xl hover:scale-110 transition-transform shadow-lg">
                        <Download className="w-5 h-5" />

@@ -2,6 +2,7 @@ import { useState, useEffect } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
 import { Attraction, Itinerary, RecommendedItineraryPackage, TodoItem } from '../types';
 import { Sparkles, Calendar, Clock, MapPin, CheckCircle, ChevronRight, Check, Compass, AlertCircle, ArrowRight, BookmarkCheck, ExternalLink, RefreshCw, RotateCcw, CalendarDays } from 'lucide-react';
+import { handleImageError, getSafeImageSrc } from '../utils/imageFallback';
 
 interface ItinerariesRecommendationViewProps {
   attractions: Attraction[];
@@ -261,14 +262,19 @@ export function ItinerariesRecommendationView({
                   : 'bg-white border-gray-200 hover:border-primary/50 shadow-sm opacity-90 hover:opacity-100'
               }`}
             >
-              <div className="sm:w-36 h-32 rounded-xl overflow-hidden relative shrink-0 bg-gray-100">
+              <div className="sm:w-36 h-32 rounded-xl overflow-hidden relative shrink-0 bg-red-950/20">
                 <img
-                  src={cleanThumbnail}
+                  src={getSafeImageSrc(cleanThumbnail)}
                   alt={cleanPkgName}
                   className="w-full h-full object-cover group-hover:scale-105 transition-transform"
                   onError={(e) => {
                     const firstAttr = attractions.find(a => a.id === pkg.itineraries[0]?.place_id);
-                    if (firstAttr) e.currentTarget.src = firstAttr.imageUrl;
+                    if (firstAttr?.imageUrl && e.currentTarget.src !== firstAttr.imageUrl && !e.currentTarget.dataset.triedAttr) {
+                      e.currentTarget.dataset.triedAttr = 'true';
+                      e.currentTarget.src = firstAttr.imageUrl;
+                    } else {
+                      handleImageError(e);
+                    }
                   }}
                 />
                 <div className="absolute top-2 left-2 bg-primary text-white text-[9px] font-black px-2 py-0.5 rounded uppercase tracking-wider shadow">
@@ -464,15 +470,18 @@ export function ItinerariesRecommendationView({
                             className="group relative bg-white border-2 border-gray-100 hover:border-primary rounded-2xl p-4 transition-all shadow-sm hover:shadow-md cursor-pointer flex flex-col justify-between gap-3"
                           >
                             <div className="flex gap-4">
-                              <div className="w-20 h-20 rounded-xl overflow-hidden bg-gray-100 shrink-0 relative">
+                              <div className="w-20 h-20 rounded-xl overflow-hidden bg-red-950/20 shrink-0 relative">
                                 {cleanThumbnail ? (
                                   <img
-                                    src={cleanThumbnail}
+                                    src={getSafeImageSrc(cleanThumbnail)}
                                     alt={attr?.name || 'Attraction'}
                                     className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-300"
                                     onError={(e) => {
-                                      if (attr?.imageUrl && e.currentTarget.src !== attr.imageUrl) {
+                                      if (attr?.imageUrl && e.currentTarget.src !== attr.imageUrl && !e.currentTarget.dataset.triedAttr) {
+                                        e.currentTarget.dataset.triedAttr = 'true';
                                         e.currentTarget.src = attr.imageUrl;
+                                      } else {
+                                        handleImageError(e);
                                       }
                                     }}
                                   />

@@ -14,6 +14,7 @@ import { ItineraryPlanner } from './components/ItineraryPlanner';
 import { ItinerariesRecommendationView } from './components/ItinerariesRecommendationView';
 import { Itinerary, Attraction } from './types';
 import { Map, CalendarDays, X, Plus, Loader2, Compass } from 'lucide-react';
+import { handleImageError, getSafeImageSrc } from './utils/imageFallback';
 
 function AppContent() {
   const navigate = useNavigate();
@@ -138,7 +139,7 @@ function AppContent() {
             onClick={() => navigate('/discover')}
             className="flex items-center gap-3 font-black text-xl tracking-widest uppercase cursor-pointer"
           >
-            <img src="/logo.webp" className="w-9 h-9 rounded-full object-cover shadow-sm bg-white" alt="Logo" onError={(e) => { e.currentTarget.src = 'https://placehold.co/100x100/82181a/fff?text=SA'; }} />
+            <img src="/logo.webp" className="w-9 h-9 rounded-full object-cover shadow-sm bg-white" alt="Logo" onError={handleImageError} />
             <div className="flex flex-col">
               <span>BWI-Guide</span>
               <a href="https://soreaja.my.id" target="_blank" rel="noopener noreferrer" className="text-[9px] text-white/70 hover:text-white uppercase tracking-widest leading-none mt-0.5" onClick={(e) => e.stopPropagation()}>by SoreAja</a>
@@ -353,7 +354,12 @@ function AppContent() {
             </div>
             
             <div className="flex gap-4 items-center p-3 bg-gray-50 rounded-xl mb-6 border border-gray-200">
-              <img src={attractionToAdd.imageUrl} className="w-14 h-14 rounded-lg object-cover" alt="" />
+              <img
+                src={getSafeImageSrc(attractionToAdd.imageUrl)}
+                onError={handleImageError}
+                className="w-14 h-14 rounded-lg object-cover bg-red-950/10"
+                alt={attractionToAdd.name}
+              />
               <div className="flex-1 font-bold text-gray-800 leading-tight uppercase">{attractionToAdd.name}</div>
             </div>
 
