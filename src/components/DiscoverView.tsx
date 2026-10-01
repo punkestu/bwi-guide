@@ -3,7 +3,7 @@ import { useParams, useSearchParams, useNavigate } from 'react-router-dom';
 import { MapContainer, TileLayer, Marker, Popup, Circle } from 'react-leaflet';
 import L from 'leaflet';
 import { Attraction, Category } from '../types';
-import { Search, List, Map as MapIcon, Plus, X, Sparkles, Shuffle, MapPin, Camera, ExternalLink } from 'lucide-react';
+import { Search, List, Map as MapIcon, Plus, X, Sparkles, Shuffle, MapPin, Camera, ExternalLink, Eye } from 'lucide-react';
 
 const calculateDistance = (lat1: number, lon1: number, lat2: number, lon2: number) => {
   const R = 6371; // km
@@ -255,14 +255,49 @@ export function DiscoverView({ onAddToItinerary, attractions, selectedAttraction
             {filteredData.map(item => (
               <Marker key={item.id} position={[item.lat, item.lng]} icon={customIcon}>
                 <Popup className="rounded-2xl">
-                  <div className="font-semibold text-base mb-1">{item.name}</div>
-                  <div className="text-xs text-gray-500 capitalize mb-2">{item.category}</div>
-                  <button 
-                    onClick={() => onAddToItinerary(item.id)}
-                    className="text-xs bg-primary text-white px-2 py-1.5 rounded-lg w-full flex items-center justify-center gap-1 hover:bg-primary-dark transition-colors"
-                  >
-                    <Plus className="w-3 h-3" /> Add to Plan
-                  </button>
+                  <div className="w-48 flex flex-col gap-2 p-0.5">
+                    {item.imageUrl && (
+                      <div
+                        className="w-full h-24 rounded-lg overflow-hidden cursor-pointer relative group"
+                        onClick={() => setSelectedAttraction(item.id)}
+                        title="Click to view attraction detail"
+                      >
+                        <img src={item.imageUrl} alt={item.name} className="w-full h-full object-cover group-hover:scale-105 transition-transform" />
+                        <div className="absolute inset-0 bg-black/10 group-hover:bg-transparent transition-colors"></div>
+                        <span className="absolute bottom-1 right-1 bg-black/60 text-white text-[9px] font-bold px-1.5 py-0.5 rounded backdrop-blur-xs uppercase">
+                          {item.category}
+                        </span>
+                      </div>
+                    )}
+                    <div>
+                      <div
+                        className="font-bold text-sm text-gray-900 leading-snug cursor-pointer hover:text-primary transition-colors"
+                        onClick={() => setSelectedAttraction(item.id)}
+                      >
+                        {item.name}
+                      </div>
+                      {!item.imageUrl && (
+                        <div className="text-[10px] text-gray-500 uppercase font-semibold tracking-wider">{item.category}</div>
+                      )}
+                    </div>
+
+                    <div className="flex flex-col gap-1.5 mt-1">
+                      <button 
+                        onClick={() => setSelectedAttraction(item.id)}
+                        className="text-xs bg-primary text-white hover:bg-primary-dark px-2.5 py-1.5 rounded-lg w-full flex items-center justify-center gap-1.5 font-bold uppercase transition-colors shadow-xs"
+                      >
+                        <Eye className="w-3.5 h-3.5" />
+                        <span>Open Attraction Detail</span>
+                      </button>
+                      <button 
+                        onClick={() => onAddToItinerary(item.id)}
+                        className="text-xs bg-gray-100 hover:bg-gray-200 text-gray-700 px-2.5 py-1.5 rounded-lg w-full flex items-center justify-center gap-1.5 font-bold uppercase transition-colors"
+                      >
+                        <Plus className="w-3 h-3" />
+                        <span>Add to Plan</span>
+                      </button>
+                    </div>
+                  </div>
                 </Popup>
               </Marker>
             ))}
